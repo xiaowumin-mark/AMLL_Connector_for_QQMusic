@@ -1,19 +1,15 @@
 package main
 
 import (
-	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sync"
 
 	"github.com/spf13/viper"
 )
 
 var (
-	cmd    *exec.Cmd
-	cancel context.CancelFunc
-	mu     sync.Mutex
+	cmd *exec.Cmd
 )
 
 func init() {
@@ -23,19 +19,21 @@ func init() {
 	}
 
 	appDir := filepath.Join(configDir, "AMLL_coonector_for_QQMusic")
-
+	var defaultConfig = map[string]any{
+		"theme":                "auto",
+		"lyrics_path":          filepath.Join(appDir, "lyrics"),
+		"album_art_path":       filepath.Join(appDir, "album_art"),
+		"auto_connect":         false,
+		"auto_connect_address": "localhost",
+		"auto_connect_port":    11444,
+		"app_version":          APPVersion,
+		"auto_change_volume":   true,
+	}
 	os.Mkdir(appDir, 0755)
 
 	viper.SetConfigFile(filepath.Join(appDir, "config.json"))
 
 	if err := viper.ReadInConfig(); err != nil {
-		viper.Set("theme", "auto")
-		viper.Set("lyrics_path", filepath.Join(appDir, "lyrics"))
-		viper.Set("album_art_path", filepath.Join(appDir, "album_art"))
-		viper.Set("auto_coonect", false)
-		viper.Set("auto_coonect_address", "localhost")
-		viper.Set("auto_coonect_port", 11444)
-
 		viper.WriteConfig()
 	}
 
@@ -48,6 +46,19 @@ func init() {
 	}
 
 	//startOrRestartSubprocess()
+	// 自动配置文件
+	for key, value := range defaultConfig {
+		// 检查字段是否存在
+		if !viper.IsSet(key) {
+			viper.Set(key, value)
+		}
+		if key == "app_version" {
+			if viper.GetString(key) != APPVersion {
+				viper.Set(key, APPVersion)
+			}
+		}
+		viper.WriteConfig()
+	}
 
 }
 

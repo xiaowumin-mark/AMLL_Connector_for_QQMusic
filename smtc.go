@@ -462,23 +462,26 @@ func Smtc(ep string) {
 
 					//puThrottledFunc()
 					pauthrottle.Do(func() {
-						if data.Data.PlaybackStatus == PlaybackStatusPlaying {
-							log.Println("!QQMusic.exe is playing")
+						if viper.GetBool("auto_change_volume") {
+							if data.Data.PlaybackStatus == PlaybackStatusPlaying {
+								log.Println("!QQMusic.exe is playing")
 
-							//err := QQMC.Pause()
-							//if err != nil {
-							//	log.Println(err)
-							//}
-							targetVolume = 0.2
-						} else {
-							log.Println("!QQMusic.exe is not playing")
+								//err := QQMC.Pause()
+								//if err != nil {
+								//	log.Println(err)
+								//}
+								targetVolume = 0.2
+							} else {
+								log.Println("!QQMusic.exe is not playing")
 
-							//err := QQMC.Play()
-							//if err != nil {
-							//	log.Println(err)
-							//}
-							targetVolume = 1.0
+								//err := QQMC.Play()
+								//if err != nil {
+								//	log.Println(err)
+								//}
+								targetVolume = 1.0
+							}
 						}
+
 					})
 				}
 

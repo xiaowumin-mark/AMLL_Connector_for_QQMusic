@@ -2,8 +2,8 @@
 import { ref, onMounted, watch } from 'vue'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiFolderOutline } from '@mdi/js'
-import { Dialogs ,Events,Window} from "@wailsio/runtime";
-import { GetConfig, SetAllConfig,ChoseDir } from "../../bindings/AMLL_Connector_for_QQMusic/greetservice"
+import { Dialogs, Events, Window } from "@wailsio/runtime";
+import { GetConfig, SetAllConfig, ChoseDir } from "../../bindings/AMLL_Connector_for_QQMusic/greetservice"
 const config = ref({})
 
 onMounted(() => {
@@ -36,17 +36,20 @@ function ChangeDir(type) {
     //    
     //})
     ChoseDir(config.value[type]).then(res => {
-        if (res){
+        if (res) {
             console.log(res);
             config.value[type] = res
         }
     }).catch(err => {
         console.log(err);
-        
+
     })
 }
 </script>
 <template>
+    <span
+        style="position: fixed;bottom: 5px;width: 100vw;left: 0;text-align: center;pointer-events: none;opacity: 0.5;">APP版本:{{
+            config.app_version }}</span>
     <mdui-list>
         <mdui-list-subheader>设置</mdui-list-subheader>
         <!--<mdui-list-item rounded>主题
@@ -77,7 +80,7 @@ function ChangeDir(type) {
                 @change="config.lyrics_path = $event.target.value" style="height: 40px;">
 
                 <mdui-button-icon slot="end-icon" @click="ChangeDir('lyrics_path')">
-                    <svg-icon type="mdi" :path="mdiFolderOutline" >
+                    <svg-icon type="mdi" :path="mdiFolderOutline">
 
                     </svg-icon>
                 </mdui-button-icon>
@@ -90,6 +93,10 @@ function ChangeDir(type) {
                     <svg-icon type="mdi" :path="mdiFolderOutline"></svg-icon>
                 </mdui-button-icon>
             </mdui-text-field>
+        </mdui-list-item>
+        <mdui-list-item rounded>在有其他软件播放时降低音量
+            <mdui-switch :checked="config.auto_change_volume" slot="end-icon"
+                @change="config.auto_change_volume = $event.target.checked"></mdui-switch>
         </mdui-list-item>
     </mdui-list>
 </template>
