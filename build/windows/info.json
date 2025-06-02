@@ -1,0 +1,15 @@
+{
+	"fixed": {
+		"file_version": "0.1.0"
+	},
+	"info": {
+		"0000": {
+			"ProductVersion": "0.1.0",
+			"CompanyName": "AMLL_Connector_for_QQMusic",
+			"FileDescription": "AMLL_Connector_for_QQMusic",
+			"LegalCopyright": "© 2025, xiaowumin",
+			"ProductName": "AMLL_Connector_for_QQMusic",
+			"Comments": "AMLL_Connector_for_QQMusic"
+		}
+	}
+}
