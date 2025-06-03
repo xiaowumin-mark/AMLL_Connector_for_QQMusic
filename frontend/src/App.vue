@@ -1,12 +1,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import { Window, Events } from "@wailsio/runtime";
+import { Window, Events, } from "@wailsio/runtime";
 import { RouterLink, RouterView, useRouter, useRoute } from 'vue-router'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiCogOutline, mdiCog, mdiDesktopTower, mdiLinkCircleOutline, mdiLinkCircle, mdiFormatListText, mdiTextBoxOutline, mdiTextBox } from '@mdi/js'
 import { TriggerSnapLayout, ConnectAmll, DisconnectAmll, ShowLyricWindow, HideLyricWindow, IsLyricWindowShow } from "../bindings/AMLL_Connector_for_QQMusic/greetservice"
-
-
+document.body.style.visibility = "visible";
 const route = useRoute()
 const router = useRouter()
 
@@ -76,27 +75,26 @@ onMounted(() => {
     console.log(e.data)
     isCon.value = e.data[0]
   })
-  Events.On("lyric_window_will_update_visibility", (e) => {
+  Events.On("window_will_update_visibility", (e) => {
     console.log(e.data);
 
-    isShowLyricWindow.value = e.data[0]
-  })
-  Events.On("main_window_show", () => {
-    if (['home', 'setting', 'smtcs'].includes(routeName.value)) {
-      document.body.style.visibility = "visible";
+    //isShowLyricWindow.value = e.data[0]
+    if (e.data[0].window=="main"){
+      if (['home', 'setting', 'smtcs'].includes(routeName.value)) {
+        document.body.style.visibility = e.data[0].visible ? "visible" : "hidden";
+      }
+    }else if (e.data[0].window=="lyric") {
+      isShowLyricWindow.value = e.data[0].visible;
+      if (routeName.value == "lyrics") {
+        document.body.style.visibility = e.data[0].visible ? "visible" : "hidden";
+      }
     }
   })
-  Events.On("main_window_hide", () => {
-    if (['home', 'setting', 'smtcs'].includes(routeName.value)) {
-      document.body.style.visibility = "hidden";
-    }
-  })
+  
 })
 onUnmounted(() => {
   Events.Off("amll_ws_state");
-  Events.Off("lyric_window_will_update_visibility");
-  Events.Off("main_window_show");
-  Events.Off("main_window_hide");
+  Events.Off("window_will_update_visibility");
 })
 </script>
 

@@ -1,4 +1,8 @@
 <template>
+    
+    <head>
+        <title>lyric</title>
+    </head>
     <main  ref="mainc">
         <div class="m" ref="lyricsView" @mousemove="handleMouseMove" @mouseup="handleMouseUp" @mousedown="handleMouseDown">
 
@@ -195,7 +199,7 @@ onMounted(() => {
     })
 
     Events.On("amll_play_progress", (data) => {
-        currentPrc.value = data.data[0]
+        currentPrc.value = data.data[0].progress
         //highlightLyrics(data.data[0] + 500) // 假设进度是毫秒数
     })
     Events.On("amll_lyrics_add", (data) => {
@@ -211,6 +215,8 @@ onMounted(() => {
                 lyricsEle[i].classList.add('off-play')
             }
         }
+
+        if (document.body.style.visibility != "visible") return
         let chils = lyricsEle[index].children
 
 
@@ -308,13 +314,13 @@ onMounted(() => {
     Events.On("amll_lyrics_remove", (data) => {
         console.log(data.data[0]);
     })
-    Events.On("lyric_window_will_update_visibility", (data) => {
-        if (data.data[0]) {
-            document.body.style.visibility = "visible";
-        } else {
-            document.body.style.visibility = "hidden";
-        }
-    })
+    //Events.On("lyric_window_will_update_visibility", (data) => {
+    //    if (data.data[0]) {
+    //        document.body.style.visibility = "visible";
+    //    } else {
+    //        document.body.style.visibility = "hidden";
+    //    }
+    //})
 })
 
 onUnmounted(() => {
@@ -326,7 +332,7 @@ onUnmounted(() => {
     Events.Off("amll_lyrics_add")
     Events.Off("amll_lyrics_remove")
     window.removeEventListener('dblclick', dbc)
-    Events.Off("lyric_window_will_update_visibility")
+    //Events.Off("lyric_window_will_update_visibility")
 })
 watch(lyrics, (newValue) => {
     lyricsView.value.innerHTML = ''

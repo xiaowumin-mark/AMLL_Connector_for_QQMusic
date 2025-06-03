@@ -47,6 +47,9 @@ function ChangeDir(type) {
 }
 </script>
 <template>
+    <head>
+        <title>setting</title>
+    </head>
     <span
         style="position: fixed;bottom: 5px;width: 100vw;left: 0;text-align: center;pointer-events: none;opacity: 0.5;">APP版本:{{
             config.app_version }}</span>

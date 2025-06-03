@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch, handleError } from 'vue'
-import { Events } from '@wailsio/runtime'
+import { ref, onMounted, onUnmounted, watch, handleError, reactive } from 'vue'
+import { Events} from '@wailsio/runtime'
 import { formatMilliseconds } from '../scripts/time'
 import { GetNowMusicInfo } from '../../bindings/AMLL_Connector_for_QQMusic/greetservice'
-const musicInfo = ref({
+const musicInfo = reactive({
     "title": "---",
     "artist": "---",
     "position": 0,
@@ -45,14 +45,14 @@ onMounted(() => {
     GetNowMusicInfo().then(res => {
         console.log(res);
 
-        musicInfo.value.title = res.title
-        musicInfo.value.artist = res.artist
-        musicInfo.value.album = res.album
-        musicInfo.value.duration = res.duration
-        musicInfo.value.status = "Paused"
-        musicInfo.value.mid = res.mid
-        musicInfo.value.id = res.id
-        musicInfo.value.aid = res.albumId
+        musicInfo.title = res.title
+        musicInfo.artist = res.artist
+        musicInfo.album = res.album
+        musicInfo.duration = res.duration
+        musicInfo.status = "Paused"
+        musicInfo.mid = res.mid
+        musicInfo.id = res.id
+        musicInfo.aid = res.albumId
 
         LyricStr.value = res.lyricRaw
 
@@ -64,15 +64,18 @@ onMounted(() => {
     })
 
     Events.On("amll_play_progress", (e) => {
-        musicInfo.value.position = e.data[0]
+        if (document.body.style.visibility != "visible") {
+            return
+        }
+        musicInfo.position = e.data[0].format
     })
 
     Events.On("amll_music_info", (e) => {
-        musicInfo.value.title = e.data[0].title
-        musicInfo.value.artist = e.data[0].artist
-        musicInfo.value.album = e.data[0].album
-        musicInfo.value.duration = e.data[0].duration
-        musicInfo.value.status = e.data[0].status
+        musicInfo.title = e.data[0].title
+        musicInfo.artist = e.data[0].artist
+        musicInfo.album = e.data[0].album
+        musicInfo.duration = e.data[0].duration
+        musicInfo.status = e.data[0].status
     })
 
     Events.On("logger", (e) => {
@@ -88,9 +91,9 @@ onMounted(() => {
 
     Events.On("set_music_info_is_id", (e) => {
         console.log(e.data);
-        musicInfo.value.mid = e.data[0].mid
-        musicInfo.value.id = e.data[0].id
-        musicInfo.value.aid = e.data[0].aid
+        musicInfo.mid = e.data[0].mid
+        musicInfo.id = e.data[0].id
+        musicInfo.aid = e.data[0].aid
 
     })
     Events.On("set_lyric", (e) => {
@@ -113,6 +116,9 @@ onUnmounted(() => {
 </script>
 
 <template>
+    <head>
+        <title>main</title>
+    </head>
     <main>
         <div class="row">
             <mdui-card class="item">
@@ -121,7 +127,7 @@ onUnmounted(() => {
                     <p class="can_select">歌曲名称：{{ musicInfo.title }}</p>
                     <p class="can_select">歌手：{{ musicInfo.artist }}</p>
                     <p class="can_select">专辑：{{ musicInfo.album }}</p>
-                    <p>播放进度：{{ formatMilliseconds(musicInfo.position) }}</p>
+                    <p>播放进度：{{ musicInfo.position }}</p>
                     <p class="can_select">歌曲时长：{{ formatMilliseconds(musicInfo.duration) }}</p>
                     <p>播放状态：{{ musicInfo.status }}</p>
                     <p>歌曲MID：<span class="can_select">{{ musicInfo.mid }}</span></p>
@@ -233,9 +239,9 @@ main {
 
 .log-item {
     white-space: pre-wrap;
-    opacity: 0;
+    opacity: 1;
     transform-origin: left center;
-    animation: fade-in 1s forwards;
+    /*animation: fade-in 1s forwards;*/
 }
 
 @keyframes fade-in {

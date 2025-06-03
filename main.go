@@ -2,6 +2,7 @@ package main
 
 import (
 	//"AMLL_Connector_for_QQMusic/volume"
+	"AMLL_Connector_for_QQMusic/helper"
 	"embed"
 	_ "embed"
 	"encoding/json"
@@ -357,7 +358,10 @@ func main() {
 					//	truePosition = 0 // 重置进度
 					//}
 					if application.Get() != nil {
-						application.Get().EmitEvent("amll_play_progress", truePosition)
+						application.Get().EmitEvent("amll_play_progress", map[string]interface{}{
+							"progress": uint64(truePosition),
+							"format":   helper.FormatMilliseconds(int(truePosition)),
+						})
 					}
 
 					JudgeLyricEvent()
@@ -394,10 +398,10 @@ func main() {
 		app.Quit()
 	})
 	mainWindow.OnWindowEvent(events.Common.WindowShow, func(e *application.WindowEvent) {
-		mainWindow.EmitEvent("main_window_show")
+		Window_will_update_visibility(mainWindow, "main")
 	})
 	mainWindow.OnWindowEvent(events.Common.WindowHide, func(e *application.WindowEvent) {
-		mainWindow.EmitEvent("main_window_hide")
+		Window_will_update_visibility(mainWindow, "main")
 	})
 
 	lyricWindow = app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
@@ -418,10 +422,10 @@ func main() {
 	})
 	lyricWindow.Hide()
 	lyricWindow.OnWindowEvent(events.Common.WindowHide, func(event *application.WindowEvent) {
-		app.EmitEvent("lyric_window_will_update_visibility", lyricWindow.IsVisible())
+		Window_will_update_visibility(lyricWindow, "lyric")
 	})
 	lyricWindow.OnWindowEvent(events.Common.WindowShow, func(event *application.WindowEvent) {
-		app.EmitEvent("lyric_window_will_update_visibility", lyricWindow.IsVisible())
+		Window_will_update_visibility(lyricWindow, "lyric")
 	})
 	lyricWindow.OnWindowEvent(events.Windows.WebViewNavigationCompleted, func(event *application.WindowEvent) {
 		log.Println("lyricWindow navigation completed")
@@ -501,4 +505,11 @@ func (a *GreetService) ChoseDir(defaultDirectory string) string {
 }
 func Lerp(start, end, t float64) float64 {
 	return start + (end-start)*t
+}
+
+func Window_will_update_visibility(w *application.WebviewWindow, window_name string) {
+	application.Get().EmitEvent("window_will_update_visibility", map[string]interface{}{
+		"visible": w.IsVisible(),
+		"window":  window_name,
+	})
 }
