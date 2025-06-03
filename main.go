@@ -95,7 +95,7 @@ var (
 	qqctrl        *QQMusicController
 	QQMC          *AudioController
 
-	APPVersion = "0.0.0-beta_1"
+	APPVersion = "0.0.2-beta_1"
 )
 
 var lyricWindow *application.WebviewWindow
